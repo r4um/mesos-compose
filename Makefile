@@ -1,4 +1,3 @@
-YAML2JSON = ( python -c 'import sys, yaml, json; json.dump(yaml.load(sys.stdin), sys.stdout, indent=4)' 2>/dev/null || ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF))' )
 MARATHON_CURL = curl -s -X PUT -H "Content-type: application/json" -d @-
 
 DOCKER_IP ?= 127.0.0.1
@@ -6,7 +5,7 @@ export DOCKER_IP
 
 .PHONY: run
 deploy:
-	$(YAML2JSON) < apps/$(APP).yaml | $(MARATHON_CURL) http://dev:8080/v2/groups | jq .
+	cat apps/hello-flask.json | $(MARATHON_CURL) http://${DOCKER_IP}:8080/v2/apps/hello-flask
 
 .PHONY: run
 run:
