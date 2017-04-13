@@ -1,0 +1,18 @@
+{
+  "libraries": [{
+    "file": "/usr/lib/liblogrotate_container_logger.so",
+    "modules": [{
+      "name": "org_apache_mesos_LogrotateContainerLogger",
+       "parameters": [
+             {
+               "key": "max_stdout_size",
+               "value": "25MB"
+             },
+            {
+               "key": "max_stderr_size",
+               "value": "25MB"
+             }
+          ]
+    }]
+  }]
+}
