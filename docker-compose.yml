@@ -9,7 +9,7 @@ services:
       ZK_ID: 1
 
   master:
-    image: mesosphere/mesos-master:0.28.2-2.0.27.ubuntu1404
+    image: mesosphere/mesos-master:1.2.0
     network_mode: host
     environment:
       MESOS_ZK: zk://127.0.0.1:2181/mesos
@@ -22,12 +22,14 @@ services:
       - zk
 
   slave-one:
-    image: r4um/mesos-slave:0.28.2-2.0.27.ubuntu1404-docker-1.12.0
+    image: r4um/mesos-slave:1.12.0-de-17.04.0
     network_mode: host
     pid: host
+    privileged: true
     environment:
       MESOS_MASTER: zk://127.0.0.1:2181/mesos
-      MESOS_CONTAINERIZERS: docker,mesos
+      MESOS_CONTAINERIZERS: mesos
+      MESOS_SWITCH_USER: 0
       MESOS_PORT: 5051
       MESOS_RESOURCES: ports(*):[11000-11999]
       MESOS_HOSTNAME: ${DOCKER_IP}
@@ -37,6 +39,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - zk
+    #command: mesos-slave --work_dir=/tmp/mesos/agent --image_providers=docker --cgroups_cpu_enable_pids_and_tids_count  --cgroups_enable_cfs --cgroups_limit_swap --containerizers=docker,mesos  --isolation=cgroups/cpu,cgroups/mem,docker/runtime,filesystem/linux  --container_logger=org_apache_mesos_LogrotateContainerLogger --modules=file:///etc/mesos-slave-modules.json --executor_registration_timeout=5mins
+    command: mesos-slave --work_dir=/tmp/mesos/agent --containerizers=docker --container_logger=org_apache_mesos_LogrotateContainerLogger --modules=file:///etc/mesos-slave-modules.json --executor_registration_timeout=5mins
 
   # slave-two:
   #   image: mesosphere/mesos-slave:0.28.1-2.0.20.ubuntu1404
@@ -57,7 +61,7 @@ services:
   #     - zk
 
   marathon:
-    image: mesosphere/marathon:v1.1.2
+    image: mesosphere/marathon:v1.4.2
     network_mode: host
     environment:
       MARATHON_MASTER: zk://127.0.0.1:2181/mesos
